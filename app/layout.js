@@ -1,5 +1,5 @@
 import '../styles/globals.css';
-import SidebarNav from './ui/SidebarNav';
+import HamburgerMenu from './ui/HamburgerMenu';
 
 export const metadata = {
   title: 'Handcrafted Haven',
@@ -9,11 +9,11 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
-      <body className="flex bg-gray-50">
-        <SidebarNav />
-        <div className="flex-1 ml-[365px]">
-          {children}
+      <body className="bg-gray-50">
+        <div className="absolute top-4 left-4 z-10">
+          <HamburgerMenu />
         </div>
+        <div className="w-full">{children}</div>
       </body>
     </html>
   );
