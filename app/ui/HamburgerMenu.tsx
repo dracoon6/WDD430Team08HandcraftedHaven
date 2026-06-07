@@ -42,7 +42,7 @@ export default function HamburgerMenu() {
         {/* HEADER/GREET */}
         <div className="flex items-center justify-between bg-slate-800 text-white p-9 pl-8 h-14">
           <h2 className="text-lg font-bold flex items-center gap-2">
-            Hello {'USER'}! What are we looking today?
+            Hello {'USER'}! What are you looking today?
           </h2>
           <button
             onClick={toggleSidebar}
@@ -108,8 +108,8 @@ export default function HamburgerMenu() {
           >
             {showCategories && (
               <CategoriesMenu
-                onBack={() => setShowCategories(false)} // Si dan atrás en el hijo, apaga este bloque
-                onCloseAll={toggleSidebar} // Si hacen clic en una subcategoría, cierra todo
+                onBack={() => setShowCategories(false)}
+                onCloseAll={toggleSidebar}
               />
             )}
           </div>

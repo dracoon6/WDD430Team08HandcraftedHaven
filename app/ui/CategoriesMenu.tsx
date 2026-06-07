@@ -44,8 +44,8 @@ export const mockCategories: Category[] = [
 ];
 
 interface SidebarNavProps {
-  onCloseAll: () => void; // Para cerrar todo el panel cuando hagan clic en un enlace final
-  onBack: () => void; // Para regresar al menú principal del Hamburger
+  onCloseAll: () => void;
+  onBack: () => void;
 }
 
 export default function CategoriesMenu({
@@ -117,7 +117,7 @@ export default function CategoriesMenu({
                     <Link
                       key={sub.id}
                       href={`/shop/${activeCategory.slug}/${sub.slug}`}
-                      onClick={onCloseAll} // Close on navigation
+                      onClick={onCloseAll}
                       className="block px-8 py-3 text-sm text-gray-600 hover:bg-gray-100 hover:text-gray-900 transition"
                     >
                       {sub.name}
