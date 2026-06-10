@@ -52,7 +52,7 @@ export default function SidebarNav() {
   return (
     <>
       {/* SIDE PANEL */}
-      <div className="fixed top-0 left-0 h-full w-[365px] bg-white z-50 text-gray-900 shadow-2xl transform transition-transform duration-300 ease-in-out translate-x-0">
+      <div className="fixed top-0 left-0 h-full w-91.25 bg-white z-50 text-gray-900 shadow-2xl transform transition-transform duration-300 ease-in-out translate-x-0">
         {/* SLIDE ANIMATION (changes sublevel) */}
         <div className="relative overflow-hidden h-[calc(100%-3.5rem)]">
           {/* LEVEL 1: Main Categories */}
@@ -61,9 +61,19 @@ export default function SidebarNav() {
               activeCategory ? '-translate-x-full absolute' : 'translate-x-0'
             }`}
           >
-            <div className="px-6 py-2 text-sm font-bold text-gray-500 uppercase tracking-wider">
-              CATEGORIES
-            </div>
+            <nav className="px-6 py-4 border-b border-gray-100">
+              <Link
+                href="/about"
+                className="block text-sm font-medium text-gray-700 hover:text-gray-900 transition"
+           >
+             About Us
+              </Link>
+            </nav>
+
+             <div className="px-6 py-2 text-sm font-bold text-gray-500 uppercase tracking-wider">
+               CATEGORIES
+             </div>
+            
             <nav className="mt-2">
               {mockCategories.map((category) => (
                 <button

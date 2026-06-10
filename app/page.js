@@ -15,7 +15,7 @@ export default function Home() {
     <main className="min-h-screen" style={{ backgroundColor: "#241c1f" }}>
       {/* Hero Section */}
       <section
-        className="relative text-white text-center py-16 px-8 bg-cover bg-center min-h-[400px] flex items-center justify-center"
+        className="relative text-white text-center py-16 px-8 bg-cover bg-center min-h-100 flex items-center justify-center"
         style={{
           backgroundImage: "url('/images/hero-bg-geometric.svg')",
         }}
