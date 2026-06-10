@@ -1,5 +1,7 @@
 import '../styles/globals.css';
 import SidebarNav from './ui/SidebarNav';
+import Header from './ui/Header';
+import Footer from './ui/Footer';
 
 export const metadata = {
   title: 'Handcrafted Haven',
@@ -11,8 +13,10 @@ export default function RootLayout({ children }) {
     <html lang="en">
       <body className="flex bg-gray-50">
         <SidebarNav />
-        <div className="flex-1 ml-[365px]">
-          {children}
+        <div className="flex-1 ml-91.25 flex flex-col min-h-screen">
+          <Header />
+          <main className="flex-1">{children}</main>
+          <Footer />
         </div>
       </body>
     </html>
