@@ -43,16 +43,21 @@ export const mockCategories: Category[] = [
   },
 ];
 
-export default function SidebarNav() {
-  const [isOpen, setIsOpen] = useState<boolean>(false);
-  const [activeCategory, setActiveCategory] = useState<Category | null>(null);
+interface SidebarNavProps {
+  onCloseAll: () => void;
+  onBack: () => void;
+}
 
-  const toggleSidebar = () => setIsOpen(!isOpen);
+export default function CategoriesMenu({
+  onCloseAll,
+  onBack,
+}: SidebarNavProps) {
+  const [activeCategory, setActiveCategory] = useState<Category | null>(null);
 
   return (
     <>
       {/* SIDE PANEL */}
-      <div className="fixed top-0 left-0 h-full w-[365px] bg-white z-50 text-gray-900 shadow-2xl transform transition-transform duration-300 ease-in-out translate-x-0">
+      <div className="absolute top-0 left-0 h-full w-[365px] bg-white z-50 text-gray-900 shadow-2xl transform transition-transform duration-300 ease-in-out translate-x-0">
         {/* SLIDE ANIMATION (changes sublevel) */}
         <div className="relative overflow-hidden h-[calc(100%-3.5rem)]">
           {/* LEVEL 1: Main Categories */}
@@ -61,6 +66,14 @@ export default function SidebarNav() {
               activeCategory ? '-translate-x-full absolute' : 'translate-x-0'
             }`}
           >
+            {/* GO BACK TO MAIN MENU */}
+            <button
+              onClick={onBack}
+              className="cursor-pointer w-full flex items-center gap-2 px-6 py-3 border-b border-gray-200 text-sm font-bold text-gray-700 hover:bg-gray-50 transition"
+            >
+              <span>⬅️ BACK TO MAIN MENU</span>
+            </button>
+
             <div className="px-6 py-2 text-sm font-bold text-gray-500 uppercase tracking-wider">
               CATEGORIES
             </div>
@@ -104,7 +117,7 @@ export default function SidebarNav() {
                     <Link
                       key={sub.id}
                       href={`/shop/${activeCategory.slug}/${sub.slug}`}
-                      onClick={toggleSidebar} // Close on navigation
+                      onClick={onCloseAll}
                       className="block px-8 py-3 text-sm text-gray-600 hover:bg-gray-100 hover:text-gray-900 transition"
                     >
                       {sub.name}
