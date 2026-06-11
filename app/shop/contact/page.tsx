@@ -2,7 +2,7 @@
 
 import { useActionState } from 'react';
 import { useFormStatus } from 'react-dom';
-import { handleContactForm, State } from '../actions';
+import { handleContactForm, State } from '@/app/actions';
 
 function SubmitButton() {
   const { pending } = useFormStatus();

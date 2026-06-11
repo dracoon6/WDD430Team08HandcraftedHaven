@@ -28,12 +28,12 @@ export default async function CompanyDetailPage({ params }: { params: Promise<{ 
         </div>
         {session && (
           <Link 
-            href={`/companies/${id}/edit`}
+            href={`/shop/companies/${id}/edit`}
             className="px-6 py-3 bg-slate-900 text-white rounded-xl font-semibold hover:bg-slate-800 transition"
           >
             Edit Profile
           </Link>
-        )}
+        )} 
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
