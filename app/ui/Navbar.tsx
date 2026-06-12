@@ -1,0 +1,44 @@
+import Link from 'next/link';
+import Search from './Search';
+import HamburgerMenu from './HamburgerMenu';
+
+export default function Navbar() {
+  return (
+    <nav
+      className="flex items-center justify-between px-2 sm:px-4 py-3 border-b sticky top-0 z-20 gap-1 sm:gap-2"
+      style={{ backgroundColor: '#373e48', borderColor: '#000' }}
+    >
+      <div className="flex items-center gap-2 sm:gap-3 shrink-0">
+        <HamburgerMenu />
+        <Link
+          href="/shop"
+          className="hidden sm:block text-white text-sm font-semibold hover:text-gray-300 transition"
+        >
+          Logo
+        </Link>
+      </div>
+
+      <Search placeholder="Search products..." />
+
+      <div className="flex items-center gap-1 sm:gap-3 text-white text-xs sm:text-sm font-medium shrink-0">
+        <Link
+          href="/shop/profile"
+          className="flex items-center gap-1.5 px-2 py-2 rounded-md hover:bg-white/10 transition"
+          aria-label="Profile"
+        >
+          <span className="text-xl">👤</span>
+          <span className="hidden sm:inline">Profile</span>
+        </Link>
+
+        <Link
+          href="/shop/cart"
+          className="flex items-center gap-1.5 px-2 py-2 rounded-md hover:bg-white/10 transition"
+          aria-label="Cart"
+        >
+          <span className="text-xl">🛒</span>
+          <span className="hidden sm:inline">Cart</span>
+        </Link>
+      </div>
+    </nav>
+  );
+}
