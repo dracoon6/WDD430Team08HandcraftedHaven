@@ -2,10 +2,18 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
+import CategoriesMenu from './CategoriesMenu';
 
 export default function HamburgerMenu() {
   const [isOpen, setIsOpen] = useState<boolean>(false);
-  const toggleSidebar = () => setIsOpen(!isOpen);
+  const [showCategories, setShowCategories] = useState<boolean>(false);
+
+  const toggleSidebar = () => {
+    setIsOpen(!isOpen);
+    if (isOpen) {
+      setShowCategories(false);
+    }
+  };
 
   return (
     <>
@@ -34,7 +42,7 @@ export default function HamburgerMenu() {
         {/* HEADER/GREET */}
         <div className="flex items-center justify-between bg-slate-800 text-white p-9 pl-8 h-14">
           <h2 className="text-lg font-bold flex items-center gap-2">
-            Hello {'USER'}! What are we looking today?
+            Hello {'USER'}! What are you looking today?
           </h2>
           <button
             onClick={toggleSidebar}
@@ -44,30 +52,67 @@ export default function HamburgerMenu() {
 
         {/* ANIMATION */}
         <div className="relative overflow-hidden h-[calc(100%-3.5rem)]">
-          {/* HOME */}
-          <Link href="/">
-            <div className="px-6 py-3 text-sm font-bold text-gray-500 tracking-wider hover:bg-gray-200">
-              🏠 Home
-            </div>
-          </Link>
-          {/* MY ACCOUNT */}
-          <Link href="/account">
-            <div className="px-6 py-3 text-sm font-bold text-gray-500 tracking-wider hover:bg-gray-200">
-              👤 My Account
-            </div>
-          </Link>
-          {/* ABOUT US */}
-          <Link href="/aboutus">
-            <div className="px-6 py-3 text-sm font-bold text-gray-500 tracking-wider hover:bg-gray-200">
-              🤝 About Us
-            </div>
-          </Link>
-          {/* SIGN OUT */}
-          <Link href="/logout">
-            <div className="px-6 py-3 text-sm font-bold text-gray-500 tracking-wider hover:bg-gray-200">
-              ⛔ Sign Out!
-            </div>
-          </Link>
+          <div
+            className={`w-full h-full py-4 overflow-y-auto transition-transform duration-300 ${
+              showCategories ? '-translate-x-full absolute' : 'translate-x-0'
+            }`}
+          >
+            {/* HOME */}
+            <Link href="/">
+              <div className="px-6 py-3 text-sm font-bold text-gray-500 tracking-wider hover:bg-gray-200">
+                🏠 Home
+              </div>
+            </Link>
+            {/* MY ACCOUNT */}
+            <Link href="/account">
+              <div className="px-6 py-3 text-sm font-bold text-gray-500 tracking-wider hover:bg-gray-200">
+                👤 My Account
+              </div>
+            </Link>
+
+            {/* CATEGORIES MENU */}
+            <button
+              onClick={() => setShowCategories(true)}
+              className="cursor-pointer w-full flex items-center justify-between px-6 py-3.5 text-md font-bold text-gray-500 tracking-wider hover:bg-gray-200 text-left border-t border-b border-gray-200 my-3"
+            >
+              <span>🛍️ Categories</span>
+              <span className="text-gray-400 text-xs">➡️</span>
+            </button>
+
+            {/* Companies */}
+            <Link href="/companies">
+              <div className="px-6 py-3 text-sm font-bold text-gray-500 tracking-wider hover:bg-gray-200">
+                🏢 Companies
+              </div>
+            </Link>
+
+            {/* CONTACT US */}
+            <Link href="/contact">
+              <div className="px-6 py-3 text-sm font-bold text-gray-500 tracking-wider hover:bg-gray-200">
+                🤝 Contact Us
+              </div>
+            </Link>
+
+            {/* SIGN OUT */}
+            <Link href="/logout">
+              <div className="px-6 py-3 text-sm font-bold text-gray-500 tracking-wider hover:bg-gray-200">
+                ⛔ Sign Out!
+              </div>
+            </Link>
+          </div>
+
+          <div
+            className={`w-full h-full absolute top-0 transition-transform duration-300 ${
+              showCategories ? 'translate-x-0' : 'translate-x-full'
+            }`}
+          >
+            {showCategories && (
+              <CategoriesMenu
+                onBack={() => setShowCategories(false)}
+                onCloseAll={toggleSidebar}
+              />
+            )}
+          </div>
         </div>
       </div>
     </>
