@@ -21,6 +21,7 @@ export default function HamburgerMenu() {
       <button
         onClick={toggleSidebar}
         className="flex items-center gap-2 px-3 py-2 border border-transparent hover:border-white rounded-sm text-white bg-slate-900 font-medium text-sm transition"
+        aria-label="Open Navigation Menu"
       >
         ☰
       </button>
@@ -47,6 +48,7 @@ export default function HamburgerMenu() {
           <button
             onClick={toggleSidebar}
             className="text-white hover:text-gray-300"
+            aria-label="Close Navigation Menu"
           ></button>
         </div>
 

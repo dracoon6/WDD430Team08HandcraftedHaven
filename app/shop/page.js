@@ -1,4 +1,5 @@
 import { products } from '@/app/lib/product-data';
+import Link from 'next/link';
 
 const ITEMS_PER_PAGE = 12;
 
@@ -108,23 +109,23 @@ export default async function Home(props) {
       {totalPages > 1 && (
         <div className="flex justify-center items-center gap-4 pb-8">
           {currentPage > 1 && (
-            <a
+            <Link
               href={`?${new URLSearchParams({ ...searchParams, page: String(currentPage - 1) }).toString()}`}
               className="px-4 py-2 rounded text-white border border-gray-600 hover:bg-gray-700"
             >
               ← Prev
-            </a>
+            </Link>
           )}
           <span className="text-white text-sm">
             Page {currentPage} of {totalPages}
           </span>
           {currentPage < totalPages && (
-            <a
+            <Link
               href={`?${new URLSearchParams({ ...searchParams, page: String(currentPage + 1) }).toString()}`}
               className="px-4 py-2 rounded text-white border border-gray-600 hover:bg-gray-700"
             >
               Next →
-            </a>
+            </Link>
           )}
         </div>
       )}
