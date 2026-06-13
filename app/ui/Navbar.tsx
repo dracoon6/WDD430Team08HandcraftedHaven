@@ -4,10 +4,10 @@ import HamburgerMenu from './HamburgerMenu';
 import HavenLogo from './HavenLogo';
 import { auth } from '@/auth';
 
-const session = await auth();
-const userName = session?.user?.name || 'Guest';
+export default async function Navbar() {
+  const session = await auth();
+  const userName = session?.user?.name || 'Guest';
 
-export default function Navbar() {
   return (
     <nav
       className="flex items-center justify-between px-2 sm:px-4 py-3 border-b sticky top-0 z-20 gap-1 sm:gap-2"

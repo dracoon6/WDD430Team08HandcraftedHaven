@@ -4,11 +4,7 @@ import { useState } from 'react';
 import Link from 'next/link';
 import CategoriesMenu from './CategoriesMenu';
 
-interface HamburgerMenuProps {
-  userName: string;
-}
-
-export default function HamburgerMenu({ userName }: HamburgerMenuProps) {
+export default function HamburgerMenu({ userName }: { userName: string }) {
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [showCategories, setShowCategories] = useState<boolean>(false);
 
@@ -33,7 +29,7 @@ export default function HamburgerMenu({ userName }: HamburgerMenuProps) {
       {/* TOGLE OPEN/CLOSE */}
       {isOpen && (
         <div
-          className="fixed inset-0 bg-black/70 backdrop-blur-sm z-40 transition-opacity duration-300"
+          className="fixed inset-0 bg-black/60 z-40 transition-opacity duration-300"
           onClick={toggleSidebar}
         />
       )}
@@ -47,7 +43,7 @@ export default function HamburgerMenu({ userName }: HamburgerMenuProps) {
         {/* HEADER/GREET */}
         <div className="flex items-center justify-between bg-slate-800 text-white p-9 pl-8 h-14">
           <h2 className="text-lg font-bold flex items-center gap-2">
-            Hello {'USER'}! What are you looking today?
+            Hello {userName}! What are you looking today?
           </h2>
           <button
             onClick={toggleSidebar}
@@ -57,21 +53,21 @@ export default function HamburgerMenu({ userName }: HamburgerMenuProps) {
         </div>
 
         {/* ANIMATION */}
-        <div className="relative overflow-hidden h-[calc(100%-5rem)]">
+        <div className="relative overflow-hidden h-[calc(100%-3.5rem)]">
           <div
-            className={`w-full h-full py-6 px-4 overflow-y-auto space-y-1.5 transition-transform duration-300 ${
+            className={`w-full h-full py-4 overflow-y-auto transition-transform duration-300 ${
               showCategories ? '-translate-x-full absolute' : 'translate-x-0'
             }`}
           >
             {/* HOME */}
             <Link href="/">
-              <div className="flex items-center gap-3 px-4 py-3 text-sm font-semibold text-zinc-600 rounded-xl hover:bg-amber-600/10 hover:text-amber-500 transition-all duration-150">
+              <div className="px-6 py-3 text-sm font-bold text-gray-500 tracking-wider hover:bg-gray-200">
                 🏠 Home
               </div>
             </Link>
             {/* MY ACCOUNT */}
-            <Link href={userName == 'Guest' ? '/login' : '/profile'}>
-              <div className="flex items-center gap-3 px-4 py-3 text-sm font-semibold text-zinc-600 rounded-xl hover:bg-amber-600/10 hover:text-amber-500 transition-all duration-150">
+            <Link href="/account">
+              <div className="px-6 py-3 text-sm font-bold text-gray-500 tracking-wider hover:bg-gray-200">
                 👤 My Account
               </div>
             </Link>
@@ -79,42 +75,34 @@ export default function HamburgerMenu({ userName }: HamburgerMenuProps) {
             {/* CATEGORIES MENU */}
             <button
               onClick={() => setShowCategories(true)}
-              className="cursor-pointer w-full flex items-center justify-between px-4 py-3.5 text-sm font-bold text-amber-500/90 tracking-wide bg-zinc-300/40 hover:bg-amber-600/10 rounded-xl text-left border border-amber-900/20 my-3 transition-all duration-150 group"
+              className="cursor-pointer w-full flex items-center justify-between px-6 py-3.5 text-md font-bold text-gray-500 tracking-wider hover:bg-gray-200 text-left border-t border-b border-gray-200 my-3"
             >
-              <span className="flex items-center gap-3">
-                <span className="text-base group-hover:scale-110 transition-transform">
-                  🛍️
-                </span>{' '}
-                Shop By Category
-              </span>
-              <span className="text-amber-600/80 group-hover:translate-x-1 transition-transform text-xs">
-                ➡️
-              </span>
+              <span>🛍️ Categories</span>
+              <span className="text-gray-400 text-xs">➡️</span>
             </button>
 
             {/* Companies */}
-            <Link href="/shop/companies">
-              <div className="flex items-center gap-3 px-4 py-3 text-sm font-semibold text-zinc-600 rounded-xl hover:bg-amber-600/10 hover:text-amber-500 transition-all duration-150">
+            <Link href="/companies">
+              <div className="px-6 py-3 text-sm font-bold text-gray-500 tracking-wider hover:bg-gray-200">
                 🏢 Companies
               </div>
             </Link>
 
             {/* CONTACT US */}
-            <Link href="/shop/contact">
-              <div className="flex items-center gap-3 px-4 py-3 text-sm font-semibold text-zinc-600 rounded-xl hover:bg-amber-600/10 hover:text-amber-500 transition-all duration-150">
+            <Link href="/contact">
+              <div className="px-6 py-3 text-sm font-bold text-gray-500 tracking-wider hover:bg-gray-200">
                 🤝 Contact Us
               </div>
             </Link>
 
             {/* SIGN OUT */}
             <Link href="/logout">
-              <div className="flex items-center gap-3 px-4 py-3 text-sm font-semibold text-zinc-600 rounded-xl hover:bg-amber-600/10 hover:text-amber-500 transition-all duration-150">
+              <div className="px-6 py-3 text-sm font-bold text-gray-500 tracking-wider hover:bg-gray-200">
                 ⛔ Sign Out!
               </div>
             </Link>
           </div>
 
-          {/* 2ND MENU: CATEGORIES */}
           <div
             className={`w-full h-full absolute top-0 transition-transform duration-300 ${
               showCategories ? 'translate-x-0' : 'translate-x-full'
