@@ -24,7 +24,8 @@ export default function HamburgerMenu({ userName }: HamburgerMenuProps) {
       {/* HAMBURGER BUTTON */}
       <button
         onClick={toggleSidebar}
-        className="flex items-center gap-2 px-3 py-2 border border-amber-500/30 rounded-xl text-amber-500 bg-zinc-900/80 backdrop-blur-md shadow-lg hover:bg-amber-600/10 active:scale-95 transition-all duration-200 focus:outline-none"
+        className="flex items-center gap-2 px-3 py-2 border border-transparent hover:border-white rounded-sm text-white bg-slate-900 font-medium text-sm transition"
+        aria-label="Open Navigation Menu"
       >
         ☰
       </button>
@@ -44,15 +45,15 @@ export default function HamburgerMenu({ userName }: HamburgerMenuProps) {
         }`}
       >
         {/* HEADER/GREET */}
-        <div className="flex items-center justify-between bg-zinc-900 border-b border-zinc-800/80 px-6 h-20 pt-4">
-          <div className="flex flex-col">
-            <span className="text-xs font-bold tracking-widest text-amber-500 uppercase">
-              Welcome {userName} to
-            </span>
-            <h2 className="text-xl font-extrabold tracking-tight bg-gradient-to-r from-amber-400 via-orange-300 to-amber-200 bg-clip-text text-transparent">
-              Handcrafted Haven
-            </h2>
-          </div>
+        <div className="flex items-center justify-between bg-slate-800 text-white p-9 pl-8 h-14">
+          <h2 className="text-lg font-bold flex items-center gap-2">
+            Hello {'USER'}! What are you looking today?
+          </h2>
+          <button
+            onClick={toggleSidebar}
+            className="text-white hover:text-gray-300"
+            aria-label="Close Navigation Menu"
+          ></button>
         </div>
 
         {/* ANIMATION */}

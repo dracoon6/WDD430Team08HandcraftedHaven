@@ -12,6 +12,17 @@ const FormSchema = z.object({
     .min(10, { message: 'Message must be at least 10 characters.' }),
 });
 
+const CompanySchema = z.object({
+  id: z.string().uuid(),
+  name: z.string().min(2),
+  bio: z.string().max(1000).optional(),
+  location: z.string().min(2),
+  productTypes: z.string(),
+  email: z.string().email(),
+  phoneNumber: z.string().optional(),
+  website: z.string().url().optional().or(z.literal('')),
+});
+
 export type State = {
   errors?: {
     name?: string[];
@@ -63,7 +74,7 @@ export async function handleContactForm(prevState: State, formData: FormData) {
 }
 
 export async function updateCompany(prevState: any, formData: FormData) {
-  const rawData = {
+  const validatedFields = CompanySchema.safeParse({
     id: formData.get('id') as string,
     name: formData.get('name') as string,
     bio: formData.get('bio') as string,
@@ -72,10 +83,18 @@ export async function updateCompany(prevState: any, formData: FormData) {
     email: formData.get('email') as string,
     phoneNumber: formData.get('phoneNumber') as string,
     website: formData.get('website') as string,
-  };
+  });
 
-  const productTypesArray = rawData.productTypes 
-    ? rawData.productTypes.split(',').map(s => s.trim()).filter(Boolean) 
+  if (!validatedFields.success) {
+    return {
+      errors: validatedFields.error.flatten().fieldErrors,
+      message: 'Invalid input fields.',
+    };
+  }
+
+  const { id, name, bio, location, productTypes, email, phoneNumber, website } = validatedFields.data;
+  const productTypesArray = productTypes 
+    ? productTypes.split(',').map(s => s.trim()).filter(Boolean) 
     : [];
 
   try {
@@ -84,18 +103,18 @@ export async function updateCompany(prevState: any, formData: FormData) {
        SET name = $1, bio = $2, location = $3, product_types = $4, email = $5, phone_number = $6, website = $7 
        WHERE id = $8`,
       [
-        rawData.name,
-        rawData.bio,
-        rawData.location,
+        name,
+        bio,
+        location,
         productTypesArray,
-        rawData.email,
-        rawData.phoneNumber,
-        rawData.website,
-        rawData.id
+        email,
+        phoneNumber,
+        website,
+        id
       ]
     );
 
-    revalidatePath(`/companies/${rawData.id}`);
+    revalidatePath(`/companies/${id}`);
     return { message: 'Profile updated successfully!' };
   } catch (error) {
     return { message: 'Database error. Please try again.' };
