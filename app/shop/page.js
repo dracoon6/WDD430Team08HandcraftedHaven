@@ -1,4 +1,4 @@
-import { products } from '@/app/lib/product-data';
+import { getAllProducts } from '../lib/product-data';
 import Link from 'next/link';
 
 const ITEMS_PER_PAGE = 12;
@@ -17,16 +17,16 @@ function filterProducts(items, query) {
   return items.filter(
     (p) =>
       p.title?.toLowerCase().includes(q) ||
-      p.text?.toLowerCase().includes(q)
+      p.short_description?.toLowerCase().includes(q), // ✅ was p.text
   );
 }
 
 export default async function Home(props) {
+  const products = await getAllProducts();
   const searchParams = await props.searchParams;
   const query = searchParams?.query || '';
   const currentPage = Number(searchParams?.page) || 1;
 
-  // Filter + paginate
   const filtered = filterProducts(products, query);
   const totalPages = Math.ceil(filtered.length / ITEMS_PER_PAGE) || 1;
   const offset = (currentPage - 1) * ITEMS_PER_PAGE;
@@ -34,7 +34,7 @@ export default async function Home(props) {
   const columns = splitIntoColumns(pageProducts, 4);
 
   return (
-    <main className="min-h-screen" style={{ backgroundColor: "#241c1f" }}>
+    <main className="min-h-screen" style={{ backgroundColor: '#241c1f' }}>
       {/* Hero Section */}
       <section
         className="relative text-white text-center py-16 px-8 bg-cover bg-center min-h-[400px] flex items-center justify-center"
@@ -46,21 +46,23 @@ export default async function Home(props) {
           className="absolute inset-0"
           style={{
             background:
-              "linear-gradient(to bottom, rgba(0,0,0,0.7), rgba(55,62,72,0.5), rgba(36,28,31,0.85))",
+              'linear-gradient(to bottom, rgba(0,0,0,0.7), rgba(55,62,72,0.5), rgba(36,28,31,0.85))',
           }}
         />
 
         <div className="relative z-10">
           <h1 className="text-5xl mb-4 drop-shadow-lg">Handcrafted Haven</h1>
-          <p className="text-xl drop-shadow">Unique handmade products, just for you</p>
+          <p className="text-xl drop-shadow">
+            Unique handmade products, just for you
+          </p>
         </div>
       </section>
 
       {/* Search results indicator */}
       {query && (
         <div className="px-8 pt-6 text-white text-sm">
-          Showing results for: <span className="font-semibold">"{query}"</span>
-          {' '}({filtered.length} {filtered.length === 1 ? 'result' : 'results'})
+          Showing results for: <span className="font-semibold">"{query}"</span>{' '}
+          ({filtered.length} {filtered.length === 1 ? 'result' : 'results'})
         </div>
       )}
 
@@ -74,31 +76,42 @@ export default async function Home(props) {
           columns.map((col, colIndex) => (
             <div key={colIndex} className="grid gap-4">
               {col.map((item) => (
-                <article
+                <Link
                   key={item.id}
-                  className="rounded-lg p-4 shadow-md border"
-                  style={{
-                    backgroundColor: "#373e48",
-                    borderColor: "#000000",
-                  }}
+                  href={`/shop/product/${item.id}`}
+                  className="rounded-lg p-4 shadow-md border block hover:border-amber-500 hover:scale-[1.02] transition-all duration-200"
+                  style={{ backgroundColor: '#373e48', borderColor: '#000000' }}
                 >
-                  <div
-                    className={`rounded-md mb-3 ${item.h}`}
-                    style={{ backgroundColor: "#241c1f" }}
-                  />
-                  <h2 className="text-base font-medium mb-1 text-white">{item.title}</h2>
-                  <p className="text-sm mb-3" style={{ color: "#cbd5e1" }}>{item.text}</p>
-                  <button
-                    type="button"
-                    className="rounded-md px-3 py-1 text-sm text-white cursor-pointer transition"
-                    style={{
-                      backgroundColor: "#241c1f",
-                      border: "1px solid #000000",
-                    }}
+                  <div className="rounded-md mb-3 overflow-hidden h-40 bg-stone-900">
+                    {item.image_url ? (
+                      <img
+                        src={item.image_url}
+                        alt={item.title}
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <div
+                        className="w-full h-40"
+                        style={{ backgroundColor: '#241c1f' }}
+                      />
+                    )}
+                  </div>
+
+                  <h2 className="text-base font-medium mb-1 text-white">
+                    {item.title}
+                  </h2>
+
+                  <p className="ml-auto inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-amber-500/10 text-amber-300 border border-amber-500/20">
+                    ${Number(item.price).toFixed(2)}
+                  </p>
+
+                  <p
+                    className="text-sm line-clamp-2"
+                    style={{ color: '#cbd5e1' }}
                   >
-                    View
-                  </button>
-                </article>
+                    {item.short_description}
+                  </p>
+                </Link>
               ))}
             </div>
           ))

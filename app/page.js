@@ -1,4 +1,3 @@
-import HamburgerMenu from './ui/HamburgerMenu';
 import { products } from './lib/product-data';
 
 // Split flat array into N columns for masonry layout
