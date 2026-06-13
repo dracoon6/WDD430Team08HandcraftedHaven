@@ -65,6 +65,12 @@ export default function HamburgerMenu({ userName }: { userName: string }) {
                 🏠 Home
               </div>
             </Link>
+            {/* ABOUT US */}
+            <Link href="/shop/about">
+              <div className="px-6 py-3 text-sm font-bold text-gray-500 tracking-wider hover:bg-gray-200">
+                ℹ️ About Us
+              </div>
+            </Link>
             {/* MY ACCOUNT */}
             <Link href="/account">
               <div className="px-6 py-3 text-sm font-bold text-gray-500 tracking-wider hover:bg-gray-200">
@@ -89,7 +95,7 @@ export default function HamburgerMenu({ userName }: { userName: string }) {
             </Link>
 
             {/* CONTACT US */}
-            <Link href="/contact">
+            <Link href="/shop/about/email">
               <div className="px-6 py-3 text-sm font-bold text-gray-500 tracking-wider hover:bg-gray-200">
                 🤝 Contact Us
               </div>

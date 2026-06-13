@@ -3,10 +3,11 @@
 import { z } from 'zod';
 import { query } from './lib/db';
 import { revalidatePath } from 'next/cache';
+import { auth } from '@/auth';
 
 const FormSchema = z.object({
   name: z.string().min(2, { message: 'Name must be at least 2 characters.' }),
-  email: z.email({ message: 'Invalid email address.' }),
+  email: z.string().email({ message: 'Invalid email address.' }),
   contentMessage: z
     .string()
     .min(10, { message: 'Message must be at least 10 characters.' }),
@@ -117,6 +118,36 @@ export async function updateCompany(prevState: any, formData: FormData) {
     revalidatePath(`/companies/${id}`);
     return { message: 'Profile updated successfully!' };
   } catch (error) {
+    return { message: 'Database error. Please try again.' };
+  }
+}
+
+export async function updateUserCompany(prevState: any, formData: FormData) {
+  const session = await auth();
+  if (!session?.user?.email) {
+    return { message: 'Not authenticated' };
+  }
+
+  const companyIdValue = formData.get('companyId');
+  // Convert to number, or null if empty/invalid
+  const companyId = companyIdValue ? parseInt(companyIdValue.toString(), 10) : null;
+  const email = session.user.email;
+  const name = session.user.name;
+  const image = session.user.image;
+
+  try {
+    await query(
+      `INSERT INTO users (name, email, image, company_id)
+       VALUES ($1, $2, $3, $4)
+       ON CONFLICT (email) 
+       DO UPDATE SET company_id = EXCLUDED.company_id, name = EXCLUDED.name, image = EXCLUDED.image`,
+      [name, email, image, companyId]
+    );
+
+    revalidatePath('/account'); // Revalidate the account page to show updated info
+    return { message: 'Profile updated and linked successfully!' };
+  } catch (error) {
+    console.error('Database Error:', error);
     return { message: 'Database error. Please try again.' };
   }
 }
