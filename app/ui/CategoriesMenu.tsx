@@ -69,7 +69,7 @@ export default function CategoriesMenu({
             {/* GO BACK TO MAIN MENU */}
             <button
               onClick={onBack}
-              className="cursor-pointer w-full flex items-center gap-2 px-6 py-3 border-b border-gray-200 text-sm font-bold text-gray-700 hover:bg-gray-50 transition"
+              className="cursor-pointer w-full flex items-center justify-between px-4 py-3.5 text-sm font-bold text-amber-500/90 tracking-wide bg-zinc-300/40 hover:bg-amber-600/10 rounded-xl text-left border border-amber-900/20 my-3 transition-all duration-150 group"
             >
               <span>⬅️ BACK TO MAIN MENU</span>
             </button>
@@ -82,7 +82,7 @@ export default function CategoriesMenu({
                 <button
                   key={category.id}
                   onClick={() => setActiveCategory(category)}
-                  className="cursor-pointer w-full flex items-center justify-between px-8 py-3.5 text-sm font-medium text-gray-700 hover:bg-gray-100 transition text-left"
+                  className="flex items-center gap-3 px-4 py-3 text-sm font-semibold text-zinc-600 rounded-xl hover:bg-amber-600/10 hover:text-amber-500 transition-all duration-150"
                 >
                   <div className="flex items-center gap-3">
                     <span>{category.name} ➡️</span>
@@ -103,7 +103,7 @@ export default function CategoriesMenu({
                 {/* BACK BUTTON */}
                 <button
                   onClick={() => setActiveCategory(null)}
-                  className="cursor-pointer w-full flex items-center gap-2 px-6 py-3 border-b border-gray-200 text-sm font-bold text-gray-700 hover:bg-gray-50 transition"
+                  className="cursor-pointer w-full flex items-center justify-between px-4 py-3.5 text-sm font-bold text-amber-500/90 tracking-wide bg-zinc-300/40 hover:bg-amber-600/10 rounded-xl text-left border border-amber-900/20 my-3 transition-all duration-150 group"
                 >
                   <span> 🔙 GO BACK</span>
                 </button>
@@ -118,7 +118,7 @@ export default function CategoriesMenu({
                       key={sub.id}
                       href={`/shop/${activeCategory.slug}/${sub.slug}`}
                       onClick={onCloseAll}
-                      className="block px-8 py-3 text-sm text-gray-600 hover:bg-gray-100 hover:text-gray-900 transition"
+                      className="flex items-center gap-3 px-4 py-3 text-sm font-semibold text-zinc-600 rounded-xl hover:bg-amber-600/10 hover:text-amber-500 transition-all duration-150"
                     >
                       {sub.name}
                     </Link>

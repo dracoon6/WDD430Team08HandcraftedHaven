@@ -1,21 +1,27 @@
 import Link from 'next/link';
 import Search from './Search';
 import HamburgerMenu from './HamburgerMenu';
+import HavenLogo from './HavenLogo';
+import { auth } from '@/auth';
+
+const session = await auth();
+const userName = session?.user?.name || 'Guest';
 
 export default function Navbar() {
   return (
     <nav
       className="flex items-center justify-between px-2 sm:px-4 py-3 border-b sticky top-0 z-20 gap-1 sm:gap-2"
-      style={{ backgroundColor: '#373e48', borderColor: '#000' }}
+      style={{ backgroundColor: '#272c33', borderColor: '#000' }}
     >
       <div className="flex items-center gap-2 sm:gap-3 shrink-0">
-        <HamburgerMenu />
-        <Link
+        <HamburgerMenu userName={userName} />
+        <HavenLogo />
+        {/* <Link
           href="/shop"
           className="hidden sm:block text-white text-sm font-semibold hover:text-gray-300 transition"
         >
           Logo
-        </Link>
+        </Link> */}
       </div>
 
       <Search placeholder="Search products..." />
