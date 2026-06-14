@@ -15,7 +15,7 @@ export default async function CompaniesPage() {
         {companies.map((company: any) => (
           <Link
             key={company.id}
-            href={`/companies/${company.id}`}
+            href={`/shop/companies/${company.id}`}
             className="group block p-6 bg-zinc-200 rounded-2xl shadow-sm border border-gray-100 hover:shadow-md transition duration-200"
           >
             <div className="flex items-center gap-5">
