@@ -12,6 +12,19 @@ export default async function CompanyDetailPage({ params }: { params: Promise<{ 
 
   if (!company) notFound();
 
+
+ // Fetch products for this company
+  let products = [];
+  try {
+    const { rows: productRows } = await query(
+      'SELECT * FROM products WHERE company_id = $1 ORDER BY name ASC',
+      [id]
+    );
+    products = productRows;
+  } catch (error) {
+    console.error('Products table not available yet:', error);
+  }
+
   return (
     <div className="p-10 max-w-5xl">
       <div className="flex justify-between items-start mb-10">
@@ -52,6 +65,37 @@ export default async function CompanyDetailPage({ params }: { params: Promise<{ 
                 </span>
               ))}
             </div>
+          </section>
+
+          {/* PRODUCTS SECTION */}
+          <section>
+            <h2 className="text-2xl font-bold text-gray-900 mb-5">Our Products</h2>
+            {products.length === 0 ? (
+              <p className="text-gray-500">No products listed yet.</p>
+            ) : (
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                {products.map((product: any) => (
+                  <Link
+                    key={product.id}
+                    href={`/shop/product/${product.id}`}
+                    className="group block bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-md transition duration-200 overflow-hidden"
+                  >
+                    <img
+                      src={product.image_url || 'https://via.placeholder.com/300'}
+                      alt={product.name}
+                      className="w-full h-48 object-cover group-hover:scale-105 transition duration-300"
+                    />
+                    <div className="p-4">
+                      <h3 className="text-lg font-bold text-gray-800 group-hover:text-amber-500 transition">
+                        {product.name}
+                      </h3>
+                      <p className="text-sm text-gray-500 mt-1 line-clamp-2">{product.description}</p>
+                      <p className="text-amber-600 font-bold mt-3">${product.price}</p>
+                    </div>
+                  </Link>
+                ))}
+              </div>
+            )}
           </section>
         </div>
 
