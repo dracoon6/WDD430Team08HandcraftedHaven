@@ -4,6 +4,7 @@ import { z } from 'zod';
 import { query } from './lib/db';
 import { revalidatePath } from 'next/cache';
 import { auth } from '@/auth';
+import { upsertReview, deleteReview } from './lib/reviews';
 
 const FormSchema = z.object({
   name: z.string().min(2, { message: 'Name must be at least 2 characters.' }),
@@ -129,25 +130,111 @@ export async function updateUserCompany(prevState: any, formData: FormData) {
   }
 
   const companyIdValue = formData.get('companyId');
-  // Convert to number, or null if empty/invalid
-  const companyId = companyIdValue ? parseInt(companyIdValue.toString(), 10) : null;
+  const companyId = companyIdValue ? companyIdValue.toString() : null;
   const email = session.user.email;
   const name = session.user.name;
   const image = session.user.image;
 
   try {
     await query(
-      `INSERT INTO users (name, email, image, company_id)
-       VALUES ($1, $2, $3, $4)
+      `INSERT INTO users (name, email, avatar_url)
+       VALUES ($1, $2, $3)
        ON CONFLICT (email) 
-       DO UPDATE SET company_id = EXCLUDED.company_id, name = EXCLUDED.name, image = EXCLUDED.image`,
-      [name, email, image, companyId]
+       DO UPDATE SET name = EXCLUDED.name, avatar_url = EXCLUDED.avatar_url`,
+      [name, email, image]
     );
 
-    revalidatePath('/account'); // Revalidate the account page to show updated info
+    revalidatePath('/account');
     return { message: 'Profile updated and linked successfully!' };
   } catch (error) {
     console.error('Database Error:', error);
     return { message: 'Database error. Please try again.' };
+  }
+}
+
+// ============================================
+// REVIEW ACTIONS
+// ============================================
+
+// Helper: Get user UUID from session
+async function getUserIdFromSession(): Promise<string | null> {
+  const session = await auth();
+  
+  // Try session.user.id first (DB UUID, set by auth.ts callback)
+  if (session?.user?.id) {
+    return session.user.id;
+  }
+  
+  // Fallback: lookup by email
+  if (!session?.user?.email) return null;
+
+  const { rows } = await query<{ id: string }>(
+    'SELECT id FROM users WHERE email = $1',
+    [session.user.email]
+  );
+  return rows[0]?.id ?? null;
+}
+
+// SUBMIT REVIEW (handles both create + update via UPSERT)
+export async function submitReview(
+  productId: string,
+  rating: number,
+  reviewText: string
+) {
+  const userId = await getUserIdFromSession();
+
+  if (!userId) {
+    return { error: 'You must be logged in to submit a review' };
+  }
+
+  // Server-side validation (defense in depth)
+  if (!Number.isInteger(rating) || rating < 1 || rating > 5) {
+    return { error: 'Rating must be a whole number between 1 and 5' };
+  }
+
+  const trimmed = reviewText.trim();
+  if (trimmed.length < 5) {
+    return { error: 'Review must be at least 5 characters long' };
+  }
+
+  if (trimmed.length > 2000) {
+    return { error: 'Review must be less than 2000 characters' };
+  }
+
+  try {
+    await upsertReview(productId, userId, rating, trimmed);
+    revalidatePath(`/shop/product/${productId}`);
+    revalidatePath('/shop');
+    return { success: true };
+  } catch (err) {
+    console.error('Failed to submit review:', err);
+    return { error: 'Failed to submit review. Please try again.' };
+  }
+}
+
+// DELETE REVIEW
+export async function deleteReviewAction(
+  reviewId: string,
+  productId: string
+) {
+  const userId = await getUserIdFromSession();
+
+  if (!userId) {
+    return { error: 'You must be logged in to delete a review' };
+  }
+
+  try {
+    const success = await deleteReview(reviewId, userId);
+    if (!success) {
+      return {
+        error: 'Review not found or you do not have permission to delete it',
+      };
+    }
+    revalidatePath(`/shop/product/${productId}`);
+    revalidatePath('/shop');
+    return { success: true };
+  } catch (err) {
+    console.error('Failed to delete review:', err);
+    return { error: 'Failed to delete review' };
   }
 }
