@@ -1,13 +1,34 @@
+import { auth } from '@/auth';
+import { query } from '@/app/lib/db';
 import { getProductById } from '@/app/lib/product-data';
+import {
+  getProductReviews,
+  getProductRatingSummary,
+} from '@/app/lib/reviews';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import AddToCartButton from './AddToCartButton';
+import StarRating from '@/app/ui/StarRating';
+import ReviewForm from '@/app/ui/ReviewForm';
+import ReviewList from '@/app/ui/ReviewList';
 
 const DEFAULT_PLACEHOLDER_IMAGE =
   'https://plus.unsplash.com/premium_vector-1683134288584-d2d5f6d714d2?q=80&w=1986&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D';
 
 interface PageProps {
   params: Promise<{ id: string }>;
+}
+
+// HELPER: Get user UUID by email (so we can match with review.user_id)
+async function getCurrentUserId(
+  email: string | null | undefined
+): Promise<string | null> {
+  if (!email) return null;
+  const { rows } = await query<{ id: string }>(
+    'SELECT id FROM users WHERE email = $1',
+    [email]
+  );
+  return rows[0]?.id ?? null;
 }
 
 export default async function ProductDetailPage({ params }: PageProps) {
@@ -17,6 +38,19 @@ export default async function ProductDetailPage({ params }: PageProps) {
   if (!product) {
     notFound();
   }
+
+  // FETCH AUTH + REVIEWS IN PARALLEL FOR PERFORMANCE
+  const session = await auth();
+  const [reviews, ratingSummary, currentUserId] = await Promise.all([
+    getProductReviews(id),
+    getProductRatingSummary(id),
+    getCurrentUserId(session?.user?.email),
+  ]);
+
+  // FIND USER'S EXISTING REVIEW (FOR EDIT FORM)
+  const userReview = currentUserId
+    ? reviews.find((r) => r.user_id === currentUserId)
+    : null;
 
   const materials = Array.isArray(product.materials)
     ? product.materials
@@ -63,6 +97,21 @@ export default async function ProductDetailPage({ params }: PageProps) {
               <p className="text-sm text-amber-500/90 font-medium mt-2 tracking-wide">
                 Handcrafted Item
               </p>
+
+              {/* RATING SUMMARY (under title) */}
+              <div className="flex items-center gap-3 mt-3">
+                <StarRating
+                  rating={Math.round(ratingSummary.average_rating)}
+                  readOnly
+                  size="sm"
+                  label={`Average rating ${ratingSummary.average_rating.toFixed(1)} out of 5`}
+                />
+                <span className="text-sm text-stone-400">
+                  {ratingSummary.average_rating.toFixed(1)} (
+                  {ratingSummary.total_reviews} review
+                  {ratingSummary.total_reviews !== 1 ? 's' : ''})
+                </span>
+              </div>
             </div>
 
             {/* PRICE & AVAILABILITY */}
@@ -131,6 +180,52 @@ export default async function ProductDetailPage({ params }: PageProps) {
             <AddToCartButton product={product} />
           </div>
         </div>
+
+        {/* ============================================ */}
+        {/* CUSTOMER REVIEWS SECTION                     */}
+        {/* ============================================ */}
+        <section
+          className="mt-16 pt-8 border-t border-stone-800"
+          aria-labelledby="reviews-heading"
+        >
+          <h2
+            id="reviews-heading"
+            className="text-2xl font-serif font-semibold text-stone-100 mb-6"
+          >
+            Customer Reviews
+          </h2>
+
+          {/* REVIEW FORM (LOGGED IN) OR LOGIN PROMPT */}
+          {session?.user ? (
+            <div className="mb-8">
+              <ReviewForm
+                productId={id}
+                existingRating={userReview?.rating}
+                existingText={userReview?.review_text ?? ''}
+              />
+            </div>
+          ) : (
+            <div className="mb-8 p-4 bg-stone-900/40 border border-stone-800 rounded-xl">
+              <p className="text-stone-300">
+                Please{' '}
+                <Link
+                  href="/login"
+                  className="text-amber-500 underline hover:text-amber-400"
+                >
+                  log in
+                </Link>{' '}
+                to share your review.
+              </p>
+            </div>
+          )}
+
+          {/* REVIEW LIST WITH RATING BREAKDOWN */}
+          <ReviewList
+            reviews={reviews}
+            summary={ratingSummary}
+            currentUserId={currentUserId ?? undefined}
+          />
+        </section>
       </div>
     </main>
   );

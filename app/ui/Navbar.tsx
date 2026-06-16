@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import Image from 'next/image';
 import Search from './Search';
 import HamburgerMenu from './HamburgerMenu';
 import HavenLogo from './HavenLogo';
@@ -7,6 +8,8 @@ import { auth } from '@/auth';
 export default async function Navbar() {
   const session = await auth();
   const userName = session?.user?.name || 'Guest';
+  const userImage = session?.user?.image;
+  const isLoggedIn = !!session?.user;
 
   return (
     <nav
@@ -16,25 +19,42 @@ export default async function Navbar() {
       <div className="flex items-center gap-2 sm:gap-3 shrink-0">
         <HamburgerMenu userName={userName} />
         <HavenLogo />
-        {/* <Link
-          href="/shop"
-          className="hidden sm:block text-white text-sm font-semibold hover:text-gray-300 transition"
-        >
-          Logo
-        </Link> */}
       </div>
 
       <Search placeholder="Search products..." />
 
       <div className="flex items-center gap-1 sm:gap-3 text-white text-xs sm:text-sm font-medium shrink-0">
-        <Link
-          href="/account"
-          className="flex items-center gap-1.5 px-2 py-2 rounded-md hover:bg-white/10 transition"
-          aria-label="Profile"
-        >
-          <span className="text-xl">👤</span>
-          <span className="hidden sm:inline">Profile</span>
-        </Link>
+        {isLoggedIn ? (
+          <Link
+            href="/account"
+            className="flex items-center gap-2 px-2 py-1 rounded-md hover:bg-white/10 transition"
+            aria-label={`Account: ${userName}`}
+          >
+            {userImage ? (
+              <Image
+                src={userImage}
+                alt={userName}
+                width={32}
+                height={32}
+                className="rounded-full border border-white/20"
+              />
+            ) : (
+              <span className="text-xl">👤</span>
+            )}
+            <span className="hidden sm:inline truncate max-w-[120px]">
+              {userName}
+            </span>
+          </Link>
+        ) : (
+          <Link
+            href="/api/auth/signin"
+            className="flex items-center gap-1.5 px-2 py-2 rounded-md hover:bg-white/10 transition"
+            aria-label="Sign in"
+          >
+            <span className="text-xl">👤</span>
+            <span className="hidden sm:inline">Sign In</span>
+          </Link>
+        )}
 
         <Link
           href="/shop/cart"
