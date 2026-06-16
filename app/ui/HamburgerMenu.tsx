@@ -3,8 +3,15 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import CategoriesMenu from './CategoriesMenu';
+import { DBCategory } from './CategoriesMenu';
 
-export default function HamburgerMenu({ userName }: { userName: string }) {
+export default function HamburgerMenu({
+  userName,
+  categories,
+}: {
+  userName: string;
+  categories: DBCategory[];
+}) {
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [showCategories, setShowCategories] = useState<boolean>(false);
 
@@ -126,6 +133,7 @@ export default function HamburgerMenu({ userName }: { userName: string }) {
           >
             {showCategories && (
               <CategoriesMenu
+                categories={categories}
                 onBack={() => setShowCategories(false)}
                 onCloseAll={toggleSidebar}
               />

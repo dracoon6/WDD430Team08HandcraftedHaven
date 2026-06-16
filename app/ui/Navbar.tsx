@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import Search from './Search';
+import { getAllCategories } from '@/app/lib/categories-data';
 import HamburgerMenu from './HamburgerMenu';
 import HavenLogo from './HavenLogo';
 import { auth } from '@/auth';
@@ -10,6 +11,7 @@ export default async function Navbar() {
   const userName = session?.user?.name || 'Guest';
   const userImage = session?.user?.image;
   const isLoggedIn = !!session?.user;
+  const categories = await getAllCategories();
 
   return (
     <nav
@@ -17,7 +19,7 @@ export default async function Navbar() {
       style={{ backgroundColor: '#272c33', borderColor: '#000' }}
     >
       <div className="flex items-center gap-2 sm:gap-3 shrink-0">
-        <HamburgerMenu userName={userName} />
+        <HamburgerMenu userName={userName} categories={categories} />
         <HavenLogo />
       </div>
 
