@@ -1,4 +1,5 @@
 import { getAllProducts } from '../lib/product-data';
+import { getAllCategories } from '../lib/categories-data';
 import Link from 'next/link';
 
 const ITEMS_PER_PAGE = 12;
@@ -11,27 +12,43 @@ function splitIntoColumns(items, numCols) {
 }
 
 // Filter products by search query
-function filterProducts(items, query) {
-  if (!query) return items;
-  const q = query.toLowerCase();
-  return items.filter(
-    (p) =>
-      p.title?.toLowerCase().includes(q) ||
-      p.short_description?.toLowerCase().includes(q),
-  );
+function filterProducts(items, query, categorySlug, allCategories) {
+  let result = items;
+
+  // Filter by category first
+  if (categorySlug && allCategories) {
+    const match = allCategories.find((c) => c.slug === categorySlug);
+    if (match) result = result.filter((p) => p.category_id === match.id);
+  }
+  if (query) {
+    const q = query.toLowerCase();
+    result = result.filter(
+      (p) =>
+        p.title?.toLowerCase().includes(q) ||
+        p.short_description?.toLowerCase().includes(q),
+    );
+  }
+  return result;
 }
 
 export default async function Home(props) {
-  const products = await getAllProducts();
+  const [products, allCategories] = await Promise.all([
+    getAllProducts(),
+    getAllCategories(),
+  ]);
+
   const searchParams = await props.searchParams;
   const query = searchParams?.query || '';
+  const categorySlug = searchParams?.category || '';
   const currentPage = Number(searchParams?.page) || 1;
 
-  const filtered = filterProducts(products, query);
+  const filtered = filterProducts(products, query, categorySlug, allCategories);
   const totalPages = Math.ceil(filtered.length / ITEMS_PER_PAGE) || 1;
   const offset = (currentPage - 1) * ITEMS_PER_PAGE;
   const pageProducts = filtered.slice(offset, offset + ITEMS_PER_PAGE);
   const columns = splitIntoColumns(pageProducts, 4);
+
+  const activeCategory = allCategories.find((c) => c.slug === categorySlug);
 
   return (
     <main className="min-h-screen" style={{ backgroundColor: '#241c1f' }}>
@@ -63,6 +80,35 @@ export default async function Home(props) {
             </span>
           </h1>
 
+          {/* Category + Search indicators */}
+          {(categorySlug || query) && (
+            <div className="px-8 pt-6 flex items-center gap-3 flex-wrap">
+              {activeCategory && (
+                <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold bg-amber-500/10 text-amber-400 border border-amber-500/20">
+                  🛍️ {activeCategory.name}
+                  <Link
+                    href={query ? `?query=${query}` : '?'}
+                    className="hover:text-white"
+                  >
+                    ✕
+                  </Link>
+                </span>
+              )}
+              {query && (
+                <span className="text-stone-300 text-sm">
+                  Results for{' '}
+                  <span className="text-amber-400 font-semibold">
+                    "{query}"
+                  </span>{' '}
+                  <span className="text-stone-400">
+                    ({filtered.length}{' '}
+                    {filtered.length === 1 ? 'result' : 'results'})
+                  </span>
+                </span>
+              )}
+            </div>
+          )}
+
           {/* TAGLINE */}
           <p className="text-base md:text-lg text-stone-200 italic font-normal tracking-wide drop-shadow mt-2">
             Unique handmade products, just for you
@@ -83,8 +129,7 @@ export default async function Home(props) {
           Showing results for:{' '}
           <span className="font-semibold text-amber-400">"{query}"</span>{' '}
           <span className="text-stone-400">
-            ({filtered.length}{' '}
-            {filtered.length === 1 ? 'result' : 'results'})
+            ({filtered.length} {filtered.length === 1 ? 'result' : 'results'})
           </span>
         </div>
       )}
@@ -153,7 +198,9 @@ export default async function Home(props) {
             </Link>
           )}
           <span className="text-stone-300 text-sm">
-            Page <span className="text-amber-400 font-semibold">{currentPage}</span> of{' '}
+            Page{' '}
+            <span className="text-amber-400 font-semibold">{currentPage}</span>{' '}
+            of{' '}
             <span className="text-amber-400 font-semibold">{totalPages}</span>
           </span>
           {currentPage < totalPages && (

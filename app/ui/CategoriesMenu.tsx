@@ -3,132 +3,51 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 
-export interface Subcategory {
-  id: string;
+export interface DBCategory {
+  id: number;
   name: string;
   slug: string;
 }
 
-export interface Category {
-  id: string;
-  name: string;
-  slug: string;
-  subcategories: Subcategory[];
-}
-
-export const mockCategories: Category[] = [
-  {
-    id: '1',
-    name: 'Electronics',
-    slug: 'electronics',
-    subcategories: [
-      { id: '1-1', name: 'Audio & Headphones', slug: 'audio-headphones' },
-      {
-        id: '1-2',
-        name: 'Computers & Accessories',
-        slug: 'computers-accessories',
-      },
-      { id: '1-3', name: 'Smart Home', slug: 'smart-home' },
-    ],
-  },
-  {
-    id: '2',
-    name: 'Clothing & Fashion',
-    slug: 'clothing-fashion',
-    subcategories: [
-      { id: '2-1', name: "Men's Fashion", slug: 'mens-fashion' },
-      { id: '2-2', name: "Women's Fashion", slug: 'womens-fashion' },
-      { id: '2-3', name: "Kids' Luggage", slug: 'kids-luggage' },
-    ],
-  },
-];
-
-interface SidebarNavProps {
+interface CategoriesMenuProps {
+  categories: DBCategory[];
   onCloseAll: () => void;
   onBack: () => void;
 }
 
 export default function CategoriesMenu({
+  categories,
   onCloseAll,
   onBack,
-}: SidebarNavProps) {
-  const [activeCategory, setActiveCategory] = useState<Category | null>(null);
-
+}: CategoriesMenuProps) {
   return (
-    <>
-      {/* SIDE PANEL */}
-      <div className="absolute top-0 left-0 h-full w-[365px] bg-white z-50 text-gray-900 shadow-2xl transform transition-transform duration-300 ease-in-out translate-x-0">
-        {/* SLIDE ANIMATION (changes sublevel) */}
-        <div className="relative overflow-hidden h-[calc(100%-3.5rem)]">
-          {/* LEVEL 1: Main Categories */}
-          <div
-            className={`w-full h-full py-4 overflow-y-auto transition-transform duration-300 ${
-              activeCategory ? '-translate-x-full absolute' : 'translate-x-0'
-            }`}
-          >
-            {/* GO BACK TO MAIN MENU */}
-            <button
-              onClick={onBack}
-              className="cursor-pointer w-full flex items-center justify-between px-4 py-3.5 text-sm font-bold text-amber-500/90 tracking-wide bg-zinc-300/40 hover:bg-amber-600/10 rounded-xl text-left border border-amber-900/20 my-3 transition-all duration-150 group"
-            >
-              <span>⬅️ BACK TO MAIN MENU</span>
-            </button>
+    <div className="absolute top-0 left-0 h-full w-[365px] bg-white z-50 text-gray-900 shadow-2xl">
+      <div className="h-full py-4 overflow-y-auto">
+        {/* BACK TO MAIN MENU */}
+        <button
+          onClick={onBack}
+          className="cursor-pointer w-full flex items-center px-4 py-3.5 text-sm font-bold text-amber-500/90 tracking-wide bg-zinc-300/40 hover:bg-amber-600/10 rounded-xl text-left border border-amber-900/20 my-3 transition-all duration-150"
+        >
+          ⬅️ BACK TO MAIN MENU
+        </button>
 
-            <div className="px-6 py-2 text-sm font-bold text-gray-500 uppercase tracking-wider">
-              CATEGORIES
-            </div>
-            <nav className="mt-2">
-              {mockCategories.map((category) => (
-                <button
-                  key={category.id}
-                  onClick={() => setActiveCategory(category)}
-                  className="flex items-center gap-3 px-4 py-3 text-sm font-semibold text-zinc-600 rounded-xl hover:bg-amber-600/10 hover:text-amber-500 transition-all duration-150"
-                >
-                  <div className="flex items-center gap-3">
-                    <span>{category.name} ➡️</span>
-                  </div>
-                </button>
-              ))}
-            </nav>
-          </div>
-
-          {/* LEVEL 2: SUBCATEGORIES */}
-          <div
-            className={`w-full h-full py-4 bg-white overflow-y-auto absolute top-0 transition-transform duration-300 ${
-              activeCategory ? 'translate-x-0' : 'translate-x-full'
-            }`}
-          >
-            {activeCategory && (
-              <>
-                {/* BACK BUTTON */}
-                <button
-                  onClick={() => setActiveCategory(null)}
-                  className="cursor-pointer w-full flex items-center justify-between px-4 py-3.5 text-sm font-bold text-amber-500/90 tracking-wide bg-zinc-300/40 hover:bg-amber-600/10 rounded-xl text-left border border-amber-900/20 my-3 transition-all duration-150 group"
-                >
-                  <span> 🔙 GO BACK</span>
-                </button>
-
-                {/* SUBCATEGORY LIST */}
-                <div className="px-8 py-4 text-sm font-bold text-gray-900 border-b border-gray-100">
-                  {activeCategory.name}
-                </div>
-                <nav className="mt-2">
-                  {activeCategory.subcategories.map((sub: Subcategory) => (
-                    <Link
-                      key={sub.id}
-                      href={`/shop/${activeCategory.slug}/${sub.slug}`}
-                      onClick={onCloseAll}
-                      className="flex items-center gap-3 px-4 py-3 text-sm font-semibold text-zinc-600 rounded-xl hover:bg-amber-600/10 hover:text-amber-500 transition-all duration-150"
-                    >
-                      {sub.name}
-                    </Link>
-                  ))}
-                </nav>
-              </>
-            )}
-          </div>
+        <div className="px-6 py-2 text-sm font-bold text-gray-500 uppercase tracking-wider">
+          Categories
         </div>
+
+        <nav className="mt-2">
+          {categories.map((category) => (
+            <Link
+              key={category.id}
+              href={`/shop?category=${category.slug}`}
+              onClick={onCloseAll}
+              className="flex items-center gap-3 px-4 py-3 text-sm font-semibold text-zinc-600 rounded-xl hover:bg-amber-600/10 hover:text-amber-500 transition-all duration-150"
+            >
+              {category.name}
+            </Link>
+          ))}
+        </nav>
       </div>
-    </>
+    </div>
   );
 }
